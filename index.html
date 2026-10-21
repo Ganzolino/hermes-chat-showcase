@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes Chat — свой чат на своём сервере</title>
+<meta name="description" content="Локальный веб-чат с двумя режимами: быстрый чат и агент с инструментами. Живёт на домашнем сервере, без облаков.">
+<style>
+  :root {
+    --bg: #131211;
+    --panel: #1b1a18;
+    --line: #2e2b27;
+    --text: #f2efe9;
+    --muted: #a39d93;
+    --accent: #e8a33d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+  body {
+    font: 17px/1.6 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 72px 0 40px; }
+  .eyebrow {
+    font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 18px;
+  }
+  h1 { font-size: clamp(34px, 6vw, 62px); line-height: 1.05; margin: 0 0 20px; font-weight: 650; letter-spacing: -.02em; }
+  .lead { font-size: clamp(17px, 2.2vw, 21px); color: var(--muted); margin: 0; max-width: 720px; }
+  .lead b { color: var(--text); font-weight: 550; }
+  figure { margin: 44px 0 0; }
+  video { width: 100%; border-radius: 16px; display: block; background: #0d0c0b; border: 1px solid var(--line); }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 12px; }
+  section { padding: 56px 0; border-top: 1px solid var(--line); margin-top: 56px; }
+  h2 { font-size: 22px; margin: 0 0 26px; font-weight: 600; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 10px 22px; margin: 0; }
+  dt { color: var(--muted); font-size: 15px; }
+  dd { margin: 0; font-size: 15px; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px; background: #221f1b; border: 1px solid var(--line);
+    border-radius: 6px; padding: 2px 7px; color: #f0d9b0;
+  }
+  footer { padding: 40px 0 64px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .note { color: var(--muted); font-size: 14px; margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Hermes Chat</p>
+    <h1>Свой чат.<br>На своём сервере.</h1>
+    <p class="lead">Веб-интерфейс с двумя режимами: <b>чат</b> отвечает стримом, <b>агент</b> умеет запускать инструменты — читает файлы, смотрит картинки, разбирает ссылки. Работает в локальной сети, без облачных панелей.</p>
+
+    <figure>
+      <video controls muted loop playsinline poster="assets/brag.jpg" preload="metadata">
+        <source src="assets/brag.mp4" type="video/mp4">
+      </video>
+      <figcaption>20 секунд: чат, агент с терминалом, зрение, YouTube-транскрипты.</figcaption>
+    </figure>
+  </header>
+
+  <section>
+    <h2>Что внутри</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Два режима</h3>
+        <p>Обычный чат со стримингом токенов и агент, который планирует и вызывает инструменты.</p>
+      </div>
+      <div class="card">
+        <h3>Агент в песочнице</h3>
+        <p>Запуск через <code>bwrap</code>: <code>/root</code> скрыт, системный корень только для чтения, доступен лишь свой каталог.</p>
+      </div>
+      <div class="card">
+        <h3>Своя история</h3>
+        <p>SQLite на диске сервера: чаты, вложения, аудит — всё под твоим контролем.</p>
+      </div>
+      <div class="card">
+        <h3>Лимиты</h3>
+        <p>Сообщения в минуту, запуски агента в час и суточный бюджет токенов на пользователя.</p>
+      </div>
+      <div class="card">
+        <h3>Вложения</h3>
+        <p>Скрепка, drag&amp;drop и вставка из буфера. Картинки агент смотрит через зрительную модель.</p>
+      </div>
+      <div class="card">
+        <h3>Темы</h3>
+        <p>Светлая и тёмная палитра, переключатель «авто / тёмная / светлая».</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Как это собрано</h2>
+    <dl>
+      <dt>Бэкенд</dt><dd>FastAPI, SSE-стриминг, SQLite, argon2 для паролей</dd>
+      <dt>Агент</dt><dd>Hermes CLI внутри <code>bwrap</code>, инструменты: web, file, vision, code</dd>
+      <dt>Фронтенд</dt><dd>Один SPA без сборки: HTML, CSS, ванильный JS</dd>
+      <dt>Запуск</dt><dd><code>systemd</code>, один юнит, порт в локальной сети</dd>
+      <dt>Модели</dt><dd>любой OpenAI-совместимый провайдер через переменные окружения</dd>
+    </dl>
+    <p class="note">Исходный код приватный. Здесь — только витрина: страница и ролик.</p>
+  </section>
+
+  <footer>
+    Проект для домашней сети. <a href="https://github.com/Ganzolino">github.com/Ganzolino</a>
+  </footer>
+
+</div>
+</body>
+</html>
